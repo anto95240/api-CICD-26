@@ -1,0 +1,36 @@
+{
+  "name": "api-1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "format:fix": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "npm run lint:check",
+    "lint:check": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.6",
+    "eslint": "^9.39.2",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.6.1",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0"
+  }
+}

@@ -19,8 +19,18 @@ interface CartItem {
 }
 
 export function calculateCartTotal(cart: CartItem[] | null | undefined): number {
-  // Validation: panier vide ou null/undefined
-  if (!cart || cart.length === 0) {
+  // Validation: panier ne doit pas être null ou undefined
+  if (cart === null || cart === undefined) {
+    throw new Error('Cart cannot be null or undefined');
+  }
+
+  // Validation: panier doit être un tableau
+  if (typeof cart !== 'object' || !Array.isArray(cart)) {
+    throw new Error('Cart must be an array');
+  }
+
+  // Validation: panier vide
+  if (cart.length === 0) {
     return 0;
   }
 

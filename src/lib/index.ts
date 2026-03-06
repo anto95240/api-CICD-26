@@ -1,7 +1,24 @@
 export function calculatedDiscount(price: number, discount: number): number {
+  // Validation: price doit être un nombre
+  if (typeof price !== "number") {
+    throw new Error("Price must be a number");
+  }
+
+  // Validation: discount doit être un nombre
+  if (typeof discount !== "number") {
+    throw new Error("Discount must be a number");
+  }
+
+  // Validation: price ne doit pas être négatif
+  if (price < 0) {
+    throw new Error("Price must be positive");
+  }
+
+  // Validation: discount doit être entre 0 et 100
   if (discount < 0 || discount > 100) {
     throw new Error("Discount must be between 0 and 100");
   }
+
   return price - (price * discount) / 100;
 }
 

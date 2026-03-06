@@ -18,15 +18,17 @@ interface CartItem {
   qty: number;
 }
 
-export function calculateCartTotal(cart: CartItem[] | null | undefined): number {
+export function calculateCartTotal(
+  cart: CartItem[] | null | undefined,
+): number {
   // Validation: panier ne doit pas être null ou undefined
   if (cart === null || cart === undefined) {
-    throw new Error('Cart cannot be null or undefined');
+    throw new Error("Cart cannot be null or undefined");
   }
 
   // Validation: panier doit être un tableau
-  if (typeof cart !== 'object' || !Array.isArray(cart)) {
-    throw new Error('Cart must be an array');
+  if (typeof cart !== "object" || !Array.isArray(cart)) {
+    throw new Error("Cart must be an array");
   }
 
   // Validation: panier vide
@@ -38,21 +40,26 @@ export function calculateCartTotal(cart: CartItem[] | null | undefined): number 
   let total = 0;
   for (const item of cart) {
     // Validation: price et qty doivent être des nombres
-    if (typeof item.price !== 'number' || typeof item.qty !== 'number') {
-      throw new Error('Price and qty must be numbers');
+    if (typeof item.price !== "number" || typeof item.qty !== "number") {
+      throw new Error("Price and qty must be numbers");
     }
 
     // Validation: price et qty ne doivent pas être null/undefined
-    if (item.price === null || item.price === undefined || item.qty === null || item.qty === undefined) {
-      throw new Error('Price and qty cannot be null or undefined');
+    if (
+      item.price === null ||
+      item.price === undefined ||
+      item.qty === null ||
+      item.qty === undefined
+    ) {
+      throw new Error("Price and qty cannot be null or undefined");
     }
 
     // Validation: price et qty doivent être positifs
     if (item.price < 0) {
-      throw new Error('Price must not be negative');
+      throw new Error("Price must not be negative");
     }
     if (item.qty < 0) {
-      throw new Error('Qty must not be negative');
+      throw new Error("Qty must not be negative");
     }
 
     total += item.price * item.qty;
@@ -60,4 +67,3 @@ export function calculateCartTotal(cart: CartItem[] | null | undefined): number 
 
   return total;
 }
-

@@ -67,9 +67,20 @@ jobs:
             node-version: 20
             
         - run: npm ci
-        - run: npx prisma generate
-        - run: npx prisma migrate dev --name init
-        - run: npx prisma db seed
+      
+        - name: Generate Prisma Client
+          run: npx prisma generate
+          
+        - name: Run Prisma Migrations
+          run: npx prisma migrate dev --name init
+          env:
+            DATABASE_URL: "file:./dev.db" # <-- AJOUT ICI
+            
+        - name: Seed Database
+          run: npx prisma db seed
+          env:
+            DATABASE_URL: "file:./dev.db" # <-- AJOUT ICI
+            
         - run: npm run build
         
         # Lancer l'API en tâche de fond pour que K6 puisse la tester
@@ -78,7 +89,7 @@ jobs:
           env:
             PORT: 3000
             DATABASE_URL: "file:./dev.db"
-            
+              
         - name: Wait for API to boot
           run: sleep 5
           

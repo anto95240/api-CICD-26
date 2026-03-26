@@ -1,27 +1,29 @@
-# Alpine distribution légère de nodejs sous la version 20
 FROM node:20-alpine AS build
-# Définition du répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copie des fichiers nécessaires pour installer les dépendances
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copier le code source
 COPY . .
-# ou => COPY src ./src
+
+# Générer le client Prisma avant de transpiler le TypeScript
+RUN npx prisma generate
 RUN npm run build
 
-# Utilisation d'une image plus légère pour l'exécution
 FROM node:20-alpine AS runtime
 WORKDIR /app
     
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV DATABASE_URL="file:./dev.db"
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/prisma ./prisma
+# Fichier de config Prisma 7 indispensable
+COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
-CMD ["node", "dist/index.js"]
-# CMD ["npm", "start"]
+
+# Lancer la migration (crée le fichier SQLite si manquant) puis démarrer l'API
+CMD sh -c "npx prisma migrate deploy && node dist/index.js"

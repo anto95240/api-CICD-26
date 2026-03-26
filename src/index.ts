@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import NodeCache from "node-cache";
 
 dotenv.config();
@@ -16,7 +16,7 @@ const prisma = new PrismaClient({ adapter });
 
 app.get("/products", async (req, res) => {
   const cacheKey = "all_products";
-  
+
   // OPTIMISATION : On vérifie le cache en RAM en premier
   const cachedProducts = myCache.get(cacheKey);
   if (cachedProducts) {
@@ -25,7 +25,7 @@ app.get("/products", async (req, res) => {
 
   // Si pas en cache, on tape la BDD (plus lent)
   const products = await prisma.product.findMany();
-  
+
   // On sauvegarde pour les requêtes suivantes
   myCache.set(cacheKey, products);
   res.json(products);

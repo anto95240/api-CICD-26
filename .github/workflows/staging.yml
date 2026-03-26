@@ -56,7 +56,7 @@ jobs:
             -d '{"image_tag":"staging-${{ github.sha }}","environment":"staging"}'
 
   performance-test:
-      needs: test-and-build
+      needs: test-suite
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4

@@ -1,37 +1,38 @@
 import express from "express";
-import products from "./data/products.json";
 import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import NodeCache from "node-cache";
 
 dotenv.config();
 
-interface Product {
-  id: number;
-  name?: string;
-  price?: number;
-  description?: string;
-}
-
 const app = express();
+const myCache = new NodeCache({ stdTTL: 60 }); // Cache de 60s
 
-app.get("/", (req, res) => {
-  console.log("Received request for /");
-  res.send("Hello, World!");
+const adapter = new PrismaBetterSqlite3({
+  url: process.env.DATABASE_URL || "file:./dev.db",
 });
+const prisma = new PrismaClient({ adapter });
 
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
-});
+app.get("/products", async (req, res) => {
+  const cacheKey = "all_products";
 
-app.get("/products", (req, res) => {
+  // OPTIMISATION : On vérifie le cache en RAM en premier
+  const cachedProducts = myCache.get(cacheKey);
+  if (cachedProducts) {
+    return res.json(cachedProducts);
+  }
+
+  // Si pas en cache, on tape la BDD (plus lent)
+  const products = await prisma.product.findMany();
+
+  // On sauvegarde pour les requêtes suivantes
+  myCache.set(cacheKey, products);
   res.json(products);
 });
 
-app.get("/products/:id", (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  const product = products.find((p: Product) => p.id === productId);
-  res.json(product);
-});
+// ... autres routes
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server is running`);
 });

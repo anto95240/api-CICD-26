@@ -54,3 +54,34 @@ jobs:
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }} \
             -H "Content-Type: application/json" \
             -d '{"image_tag":"staging-${{ github.sha }}","environment":"staging"}'
+
+  performance-test:
+      needs: test-and-build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with:
+            node-version: 20
+            
+        - run: npm ci
+        - run: npx prisma generate
+        - run: npx prisma migrate dev --name init
+        - run: npx prisma db seed
+        - run: npm run build
+        
+        # Lancer l'API en tâche de fond pour que K6 puisse la tester
+        - name: Start API
+          run: node dist/index.js &
+          env:
+            PORT: 3000
+            DATABASE_URL: "file:./dev.db"
+            
+        - name: Wait for API to boot
+          run: sleep 5
+          
+        # Exécuter le test de charge
+        - name: Run k6 load test
+          uses: grafana/k6-action@v0.3.1
+          with:
+            filename: tests/loadtest.js

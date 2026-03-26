@@ -35,7 +35,7 @@ jobs:
         run: npm run test
 
   performance-test:
-      needs: test-suite
+      needs: test-and-build
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4

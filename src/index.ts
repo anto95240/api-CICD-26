@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 dotenv.config();
 
@@ -29,7 +29,7 @@ app.get("/products", async (req, res) => {
 app.get("/products/:id", async (req, res) => {
   const productId = parseInt(req.params.id, 10);
   const product = await prisma.product.findUnique({
-    where: { id: productId }
+    where: { id: productId },
   });
   if (!product) {
     res.status(404).json({ error: "Product not found" });
